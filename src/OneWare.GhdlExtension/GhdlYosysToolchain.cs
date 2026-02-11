@@ -1,18 +1,16 @@
-﻿using OneWare.Essentials.Services;
-using OneWare.GhdlExtension;
-using OneWare.GhdlExtension.Services;
+﻿using OneWare.GhdlExtension.Services;
 using OneWare.UniversalFpgaProjectSystem.Models;
 using OneWare.UniversalFpgaProjectSystem.Services;
 using OneWare.OssCadSuiteIntegration.Yosys;
-using Prism.Ioc;
-using SkiaSharp;
 
 namespace OneWare.GhdlExtension;
 
 
 public class GhdlYosysToolchain(GhdlToolchainService ghdlToolchainService, YosysToolchain yosysToolchain) : IFpgaToolchain
 {
-    
+    public const string ToolChainId = "ghdl_yosys";
+
+    public string Id => ToolChainId;
     public void OnProjectCreated(UniversalFpgaProjectRoot project)
     {
         yosysToolchain.OnProjectCreated(project);

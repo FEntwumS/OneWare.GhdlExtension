@@ -1,11 +1,12 @@
-﻿using OneWare.Essentials.Services;
+﻿using Microsoft.Extensions.Logging;
+using OneWare.Essentials.Services;
 using OneWare.GhdlExtension.Services;
 using OneWare.UniversalFpgaProjectSystem.Models;
 using OneWare.UniversalFpgaProjectSystem.Services;
 
 namespace OneWare.GhdlExtension;
 
-public class GhdlVhdlToVerilogPreCompileStep(GhdlService ghdlService, ILogger logger) : IFpgaPreCompileStep
+public class GhdlVhdlToVerilogPreCompileStep(GhdlService ghdlService) : IFpgaPreCompileStep
 {
     public string Name => "GHDL Vhdl to Verilog";
 
@@ -22,9 +23,9 @@ public class GhdlVhdlToVerilogPreCompileStep(GhdlService ghdlService, ILogger lo
             var ghdlOutputPath = Path.Combine(buildPath, GhdlOutputDir);
             if(Directory.Exists(ghdlOutputPath)) Directory.Delete(ghdlOutputPath, true);
             Directory.CreateDirectory(ghdlOutputPath);
-            
 
-            var vhdlFile = project.Files.First(x => x == project.TopEntity);
+
+            var vhdlFile = project.GetFile(project.TopEntity);
             VerilogFileName = Path.GetFileNameWithoutExtension(vhdlFile.FullPath)+".v";
             
             var success = await ghdlService.SynthAsync(vhdlFile, "verilog", ghdlOutputPath);
@@ -32,7 +33,7 @@ public class GhdlVhdlToVerilogPreCompileStep(GhdlService ghdlService, ILogger lo
         }
         catch (Exception e)
         {
-            logger.Error(e.Message, e);
+            ContainerLocator.Container.Resolve<ILogger>().Error(e.Message, e);
             return false;
         }
     }
